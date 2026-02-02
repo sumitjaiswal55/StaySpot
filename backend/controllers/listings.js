@@ -1,109 +1,75 @@
-const Listing =  require("../models/listing.js");
+const Listing = require("../models/listing.js");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({accessToken: mapToken});
+const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
-
-// Listing Route
-
+// 1. Index Route (Saare listings dikhane ke liye)
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
-  res.json({ listings: allListings });
-}
-
-
-// New Route
-// API: Get new listing form (not needed for React, but kept for API completeness)
-module.exports.renderNewFrom = (req, res) => {
-  res.json({ message: "New listing form endpoint. Use POST /listings to create." });
-}
-
-// Create Route
-module.exports.createRoute = async (req, res, next) => {
-  try {
-    let coordinate = await geocodingClient
-      .forwardGeocode({
-        query: req.body.listing.location,
-        limit: 1
-      })
-      .send();
-
-    let url = req.file?.path;
-    let filename = req.file?.filename;
-
-    const newListings = new Listing(req.body.listing);
-    newListings.owner = req.user._id;
-    if (url && filename) {
-      newListings.image = { url, filename };
+    try {
+        const allListings = await Listing.find({});
+        res.json(allListings); 
+    } catch (err) {
+        res.status(500).json({ error: "Could not fetch listings" });
     }
-    // Map
-    newListings.geometry = coordinate.body.features[0].geometry;
+};
 
-    let savedListing = await newListings.save();
-    res.status(201).json({
-      message: "New listing added",
-      listing: savedListing
-    });
-  } catch (e) {
-    res.status(400).json({ error: e.message });
-  }
-}
+// 2. Create Route (Naya listing banane ke liye)
+module.exports.createRoute = async (req, res) => {
+    try {
+        let response = await geocodingClient
+            .forwardGeocode({
+                query: req.body.location, // React se data req.body mein aayega
+                limit: 1
+            })
+            .send();
 
-// Edit Route
-module.exports.editRoute = async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  if (!listing) {
-    return res.status(404).json({ error: "Listing not found" });
-  }
-  let originalImageUrl = listing.image?.url?.replace("upload", "/upload/h_250,w_250");
-  res.json({ listing, originalImageUrl });
-}
+        const newListing = new Listing(req.body);
+        newListing.owner = req.user.id; // JWT middleware se user id milegi
+        
+        if (req.file) {
+            newListing.image = { url: req.file.path, filename: req.file.filename };
+        }
 
+        newListing.geometry = response.body.features[0].geometry;
+        const savedListing = await newListing.save();
+        
+        res.status(201).json({ message: "Listing created!", listing: savedListing });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+};
 
-// Update Route
-module.exports.updateRoute = async (req, res) => {
-  let { id } = req.params;
-  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true });
-  if (!listing) {
-    return res.status(404).json({ error: "Listing not found" });
-  }
-  if (typeof req.file !== "undefined") {
-    let filename = req.file.filename;
-    let url = req.file.path;
-    listing.image = { url, filename };
-    await listing.save();
-  }
-  res.json({ message: "Listing updated", listing });
-}
-
-// Delete Route
-module.exports.deleteRoute = async (req, res) => {
-  let { id } = req.params;
-  let deletedListing = await Listing.findByIdAndDelete(id);
-  if (!deletedListing) {
-    return res.status(404).json({ error: "Listing not found" });
-  }
-  res.json({ message: "Listing deleted", listing: deletedListing });
-}
-
-
-// Show Route
+// 3. Show Route (Single listing details)
 module.exports.showRoute = async (req, res) => {
     let { id } = req.params;
-    let listing = await Listing.findById(id)
+    const listing = await Listing.findById(id)
         .populate({
             path: "reviews",
-            populate: { path: "author" }
+            populate: { path: "author", select: "name email" } // Sirf zaroori fields populate karein
         })
-        .populate("owner");
+        .populate("owner", "name email");
+
     if (!listing) {
-        return res.status(404).json({ error: "Sorry! Your requested listing does not exist..." });
+        return res.status(404).json({ error: "Listing not found!" });
     }
-    let response = await geocodingClient.forwardGeocode({
-        query: listing.location,
-        limit: 1
-    }).send();
-    listing.geometry = response.body.features[0].geometry;
-    res.json({ listing });
-}
+    res.json(listing);
+};
+
+// 4. Update Route
+module.exports.updateRoute = async (req, res) => {
+    let { id } = req.params;
+    let listing = await Listing.findByIdAndUpdate(id, { ...req.body }, { new: true });
+
+    if (req.file) {
+        listing.image = { url: req.file.path, filename: req.file.filename };
+        await listing.save();
+    }
+    res.json({ message: "Listing updated!", listing });
+};
+
+// 5. Delete Route
+module.exports.deleteRoute = async (req, res) => {
+    let { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+    res.json({ message: "Listing deleted successfully!" });
+};

@@ -1,160 +1,148 @@
+/* General Layout Fixes */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* Issue */
+:root {
+    --brand-color: #fe424d;
+}
 
-body{
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    margin: 0;
+}
+
+/* React main container ko full height dene ke liye */
+#root {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-
-.container{
+.container {
     flex: 1;
 }
 
-/* navbar */
-
-.logo{
-    font-size: 2rem;
-    color: #fe424d;
-}
-
-.navbar{
-    height: 4rem;
-    font-size: 3vh;
-}
-
-.nav-link{
-    color: #222 !important;
-}
-
-
-/* footer */
-
-.f-info,
-.f-info-socials,
-.f-info-brand{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.f-info-socials i{
-    font-size: 1.2rem;
-    margin-right: 1rem;
-    text-align: center;
-}
-
-.f-info{
-    width: 100%;
-    text-align: center;
+/* Navbar Styling */
+.navbar {
     height: 5rem;
-    background-color: #ebebeb;
+    background-color: white !important;
+}
+
+.logo {
+    font-size: 2rem;
+    color: var(--brand-color);
+}
+
+.nav-link {
+    color: #222 !important;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Footer Styling */
+.f-info {
+    text-align: center;
+    padding: 2rem 0;
+    background-color: #f8f9fa; /* Light grey */
+    border-top: 1px solid #ddd;
+}
+
+.f-info-socials {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    align-items: space-evenly;
+    gap: 1.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.f-info-socials i {
+    color: #222;
+    cursor: pointer;
 }
 
 .f-info-links {
-
-    a{
-        text-decoration: none;
-        text-align: center;
-        color: #222;
-    }
-    
-    width: 100%;
+    margin-top: 10px;
 }
- 
-.f-info-links a:hover{
+
+.f-info-links a {
+    text-decoration: none;
+    color: #222;
+    margin: 0 10px;
+}
+
+.f-info-links a:hover {
     text-decoration: underline;
-    color: black;
 }
 
-/* cards */
-
-.card{
+/* Listing Cards Styling */
+.listing-card {
     border: none !important;
     margin-bottom: 2rem;
+    transition: transform 0.2s ease-in-out;
 }
 
-.card-img-top{
+.listing-card:hover {
+    transform: scale(1.02);
+}
+
+.card-img-top {
     border-radius: 1rem !important;
-    width: 100%;
+    width: 100% !important;
+    height: 20rem !important; /* Fixed height for consistency */
     object-fit: cover !important;
-
-
 }
 
-.card-body{
-    padding: 0px !important;
-    font-family: "Plus Jakarta Sans", sans-serif !important;
-
+.card-body {
+    padding: 0.5rem 0 !important;
 }
 
-.card-test p {
-    font-weight: 800;
-    font-size: xx-large;
-}
-
-.listing-link{
-    text-decoration: none;
+.card-text b {
+    font-weight: 600;
 }
 
 .card-img-overlay {
     opacity: 0 !important;
 }
 
-.card-img-overlay:hover{
-    opacity: 0.2 !important;
+.card-img-overlay:hover {
+    opacity: 0.1 !important;
     background-color: white !important;
+    border-radius: 1rem;
 }
 
-
-.btn-color{
-    background-color: #fe424d !important;
-    border: none;
+/* Custom Buttons */
+.btn-color, .new-btn, .btns button {
+    background-color: var(--brand-color) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 8px !important;
 }
 
-
-.new-btn{
-    background-color: #fe424d !important;
-    border: none;
+.btn-color:hover {
+    background-color: #e33b44 !important;
 }
 
-
-/* Show Page */
-
-.show-img{
-    height: 30vh;
+/* Show Page & Map */
+.show-img {
+    height: 30rem !important;
+    border-radius: 1.5rem;
+    object-fit: cover;
 }
 
-.btns{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-}
-
-.btns button{
-    background-color: #fe424d !important;
-    border: none;
-}
-
-
-/* Card Reviews */
-
-.cardreviews{
-    border: black solid 0.5px;
-    border-radius: 10px;
-}
-
-/* Map */
-
-
-#map{
+#map {
     height: 400px;
-    width: 80vh;
+    width: 100%; /* Responsive width */
+    border-radius: 1rem;
+    margin: 2rem 0;
+}
+
+/* Reviews Styling */
+.cardreviews {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }

@@ -1,61 +1,56 @@
-const User =  require("../models/users.js");
+const User = require("../models/users.js");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
-
-// API: Get signup form (not needed for React, but kept for API completeness)
-module.exports.renderSignupForm = (req, res) => {
-    res.json({ message: "Signup form endpoint. Use POST /signup to register." });
-}
-
-// SignUp
-module.exports.signUp = async (req, res, next) => {
+// SignUp Logic
+module.exports.signUp = async (req, res) => {
     try {
-        let { username, email, password } = req.body;
-        const newUser = new User({ email, username });
-        const registerUser = await User.register(newUser, password);
-        req.login(registerUser, (err) => {
-            if (err) {
-                return next(err);
-            }
-            // Success: return user info as JSON
-            res.status(201).json({
-                message: "User registered successfully",
-                user: {
-                    id: registerUser._id,
-                    username: registerUser.username,
-                    email: registerUser.email
-                }
-            });
+        let { name, email, password } = req.body;
+        let existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ error: "Email already registered" });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newUser = new User({ name, email, password: hashedPassword });
+        await newUser.save();
+
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        res.status(201).json({
+            message: "User registered successfully",
+            token,
+            user: { id: newUser._id, name: newUser.name, email: newUser.email }
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
-    }
+    console.error("Signup Error Details:", e); // Ye terminal par asli wajah batayega
+    res.status(500).json({ error: e.message });
 }
+};
 
-// LogIn
-
-// API: Get login form (not needed for React, but kept for API completeness)
-module.exports.renderLoginForm = (req, res) => {
-    res.json({ message: "Login form endpoint. Use POST /login to authenticate." });
-}
-
+// LogIn Logic
 module.exports.logIn = async (req, res) => {
-    // On successful login, return user info as JSON
-    res.json({
-        message: "You are logged in",
-        user: req.user ? {
-            id: req.user._id,
-            username: req.user.username,
-            email: req.user.email
-        } : null
-    });
-}
+    try {
+        let { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
 
-// Logout
-module.exports.logOut = (req, res, next) => {
-    req.logout((err) => {
-        if (err) {
-            return next(err);
-        }
-        res.json({ message: "Logged out successfully" });
-    });
-}
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        res.json({
+            message: "Welcome back!",
+            token,
+            user: { id: user._id, name: user.name, email: user.email }
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+};
+
+// LogOut Logic
+module.exports.logOut = (req, res) => {
+    res.json({ message: "Logged out successfully" });
+};

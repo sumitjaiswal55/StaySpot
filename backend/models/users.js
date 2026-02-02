@@ -1,17 +1,24 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const passportLocalMongoose = require("passport-local-mongoose");
-
 
 const userSchema = new Schema({
-    username: String,
+    name: {
+        type: String,
+        required: [true, "Name is required"],
+        trim: true
+    },
     email: {
         type: String,
-        require: true,
+        required: [true, "Email is required"],
+        unique: true, // Taki ek email se do account na bane
+        trim: true,
+        lowercase: true
     },
-});
-
-userSchema.plugin(passportLocalMongoose);
+    password: {
+        type: String,
+        required: [true, "Password is required"],
+        minlength: [6, "Password must be at least 6 characters long"]
+    }
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
-

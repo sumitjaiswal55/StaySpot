@@ -1,42 +1,148 @@
+/* General Layout Fixes */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --brand-color: #fe424d;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    margin: 0;
+}
+
+/* React main container ko full height dene ke liye */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Navbar Styling */
+.navbar {
+    height: 5rem;
+    background-color: white !important;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+    font-size: 2rem;
+    color: var(--brand-color);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.nav-link {
+    color: #222 !important;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Footer Styling */
+.f-info {
+    text-align: center;
+    padding: 2rem 0;
+    background-color: #f8f9fa; /* Light grey */
+    border-top: 1px solid #ddd;
 }
 
-.card {
-  padding: 2em;
+.f-info-socials {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
 }
 
-.read-the-docs {
-  color: #888;
+.f-info-socials i {
+    color: #222;
+    cursor: pointer;
+}
+
+.f-info-links {
+    margin-top: 10px;
+}
+
+.f-info-links a {
+    text-decoration: none;
+    color: #222;
+    margin: 0 10px;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+/* Listing Cards Styling */
+.listing-card {
+    border: none !important;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.listing-card:hover {
+    transform: scale(1.02);
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    height: 20rem !important; /* Fixed height for consistency */
+    object-fit: cover !important;
+}
+
+.card-body {
+    padding: 0.5rem 0 !important;
+}
+
+.card-text b {
+    font-weight: 600;
+}
+
+.card-img-overlay {
+    opacity: 0 !important;
+}
+
+.card-img-overlay:hover {
+    opacity: 0.1 !important;
+    background-color: white !important;
+    border-radius: 1rem;
+}
+
+/* Custom Buttons */
+.btn-color, .new-btn, .btns button {
+    background-color: var(--brand-color) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 8px !important;
+}
+
+.btn-color:hover {
+    background-color: #e33b44 !important;
+}
+
+/* Show Page & Map */
+.show-img {
+    height: 30rem !important;
+    border-radius: 1.5rem;
+    object-fit: cover;
+}
+
+#map {
+    height: 400px;
+    width: 100%; /* Responsive width */
+    border-radius: 1rem;
+    margin: 2rem 0;
+}
+
+/* Reviews Styling */
+.cardreviews {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
